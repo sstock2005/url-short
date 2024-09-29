@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="description" content="URL Shortener">
+        <meta name="author" content="Sam Stockstrom">
+        <title>{{ title }}</title>
+        <style>
+            
+            body {
+                background-color: #121212;
+                color: #fff;
+                font-family: 'Poppins', sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            
+            .container {
+                text-align: center;
+                background-color: color-mix(in srgb, #d1c4ff, #121212 90%);
+                padding: 20px;
+                border-radius: 5px;
+                width: 90%;
+                max-width: 600px;
+            }
+
+            h3 {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 20px;
+            }
+
+            label {
+                font-weight: 600;
+            }
+
+            input[type="text"] {
+                width: 80%;
+                padding: 10px;
+                margin: 10px 0;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+                font-family: 'Poppins', sans-serif;
+            }
+
+            input[type="submit"] {
+                background-color: #d1c4ff;
+                color: #121212;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+
+            .response-box {
+                display: none;
+                margin-top: 20px;
+                padding: 10px;
+                background-color: #f9f9f9;
+                color: #121212;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+            }
+
+            .response-box input {
+                width: calc(100% - 70px);
+                border: none;
+                background: none;
+                color: #121212;
+                font-family: 'Poppins', sans-serif;
+                font-size: 14px;
+            }
+
+            button {
+                padding: 8px 16px;
+                background-color: #d1c4ff;
+                color: #121212;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 600;
+                margin-left: 10px;
+            }
+
+            button:hover {
+                background-color: #b0a3e0;
+            }
+
+            .back-button {
+                margin-bottom: 20px;
+                padding: 8px 16px;
+                background-color: #d1c4ff;
+                color: #121212;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+            .back-button:hover {
+                background-color: #b0a3e0;
+            }
+
+            @media (max-width: 600px) {
+                body {
+                    font-size: 14px;
+                }
+                
+                .container {
+                    width: 85%;
+                }
+
+                h3 {
+                    font-size: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h3>URL Shortener</h3>
+            <form id="urlForm">
+                <label for="url">Long URL:</label>
+                <input type="text" id="url" name="url" required>
+                <br><br>
+                <input type="submit" value="Go!">
+            </form>
+            <div class="response-box" id="responseBox">
+                <input type="text" id="shortUrl" readonly>
+                <button onclick="copyToClipboard()">Copy</button>
+            </div>
+            <br>
+            <br>
+            <a href="{{ url }}" class="back-button">Back</a>
+        </div>
+
+        <script>
+            document.getElementById('urlForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const url = document.getElementById('url').value;
+
+            fetch('/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url: url })
+            })
+            .then(response => response.text())
+            .then(shortUrl => {
+                document.getElementById('shortUrl').value = shortUrl;
+                document.getElementById('responseBox').style.display = 'flex';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+            function copyToClipboard() {
+                const shortUrlField = document.getElementById('shortUrl');
+                shortUrlField.select();
+                document.execCommand('copy');
+                alert('Short URL copied to clipboard!');
+            }
+        </script>
+    </body>
+</html>
